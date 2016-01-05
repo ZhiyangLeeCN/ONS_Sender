@@ -1,162 +1,39 @@
-# Yaf - Yet Another Framework  
-[![Build Status](https://secure.travis-ci.org/laruence/yaf.png)](https://travis-ci.org/laruence/yaf)
+# Aliyun ONS SKD for PHP7 (only send) 
 
-PHP framework written in c and built as a PHP extension.
+Allow you send message to Aliyun ONS on PHP7 
+>让您可以在PHP7上发送消息到阿里云的ONS(开发消息服务)中
 
 ## Requirement
-- PHP 5.2 +
+- PHP 7.0 +
+- Aliyun ONS C/C++ SDK
 
-## Install
-### Install Yaf 
-Yaf is an PECL extension, thus you can simply install it by:
+### Compile ONS_Sender in Linux
 
-```
-$pecl install yaf
-```
-### Compile Yaf in Linux
+Import "/aliyun-ons-c++-sdk-path/include/" path And lib file "/aliyun-ons-c++-sdk-path/lib/x64(or x86)/libonsclient4cpp.so" to environment variables
+
 ```
 $/path/to/phpize
-$./configure --with-php-config=/path/to/php-config
+$./configure
 $make && make install
 ```
+### Compile ONS_Sender in Windows
 
-## Document
-Yaf manual could be found at: http://www.php.net/manual/en/book.yaf.php
+Import "/php-path/;/php-path/main/;/php-path/Zend/;/php-path/TSRM/;/aliyun-ons-c++-sdk-path/include/" paths and lib file "/aliyun-ons-c++-sdk-path/lib/x64(or x86)/ONSClient4CPP.lib" to Visual Studio
 
-## IRC
-efnet.org #php.yaf
+Now use Visual Studio Compile!
 
-## For IDE
-you could find a documented prototype script here: https://github.com/elad-yosifon/php-yaf-doc
-
-## Tutorial
-
-### layout
-A classic Application directory layout:
+## Configuration
+in PHP.ini(在您的PHP.ini中配置):
+```
+ons_sender.publish_topics= PublishTopics in you aliyun ons console 
+ons_sender.producer_id= ProducerId in you aliyun ons console 
+ons_sender.access_key= AccessKey in you aliyun ons console
+ons_sender.secret_key= SecretKey in you aliyun ons console
 
 ```
-- .htaccess // Rewrite rules
-+ public
-  | - index.php // Application entry
-  | + css
-  | + js
-  | + img
-+ conf
-  | - application.ini // Configure 
-- application/
-  - Bootstrap.php   // Bootstrap
-  + controllers
-     - Index.php // Default controller
-  + views    
-     |+ index   
-        - index.phtml // View template for default controller
-  - library
-  - models  // Models
-  - plugins // Plugins
+
+## Use
 ```
-### DocumentRoot
-you should set DocumentRoot to application/public, thus only the public folder can be accessed by user
-
-### index.php
-index.php in the public directory is the only way in of the application, you should rewrite all request to it(you can use .htaccess in Apache+php mod) 
-
-```php
-<?php
-define("APPLICATION_PATH",  dirname(dirname(__FILE__)));
-
-$app  = new Yaf_Application(APPLICATION_PATH . "/conf/application.ini");
-$app->bootstrap() //call bootstrap methods defined in Bootstrap.php
-    ->run();
-```
-### Rewrite rules
-
-#### Apache
-
-```conf
-#.htaccess
-RewriteEngine On
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteRule .* index.php
-```
-
-#### Nginx
+$msg_id = ons_send(msg_body, tag, msg_key(optional));
 
 ```
-server {
-  listen ****;
-  server_name  domain.com;
-  root   document_root;
-  index  index.php index.html index.htm;
- 
-  if (!-e $request_filename) {
-    rewrite ^/(.*)  /index.php/$1 last;
-  }
-}
-```
-
-#### Lighttpd
-
-```
-$HTTP["host"] =~ "(www.)?domain.com$" {
-  url.rewrite = (
-     "^/(.+)/?$"  => "/index.php/$1",
-  )
-}
-```
-
-### application.ini
-application.ini is the application config file
-```ini
-[product]
-;CONSTANTS is supported
-application.directory = APPLICATION_PATH "/application/" 
-```
-alternatively, you can use a PHP array instead: 
-```php
-<?php
-$config = array(
-   "application" => array(
-       "directory" => application_path . "/application/",
-    ),
-);
-
-$app  = new yaf_application($config);
-....
-  
-```
-### default controller
-In Yaf, the default controller is named IndexController:
-
-```php
-<?php
-class IndexController extends Yaf_Controller_Abstract {
-   // default action name
-   public function indexAction() {  
-        $this->getView()->content = "Hello World";
-   }
-}
-?>
-```
-
-###view script
-The view script for default controller and default action is in the application/views/index/index.phtml, Yaf provides a simple view engineer called "Yaf_View_Simple", which supported the view template written by PHP.
-
-```php
-<html>
- <head>
-   <title>Hello World</title>
- </head>
- <body>
-   <?php echo $content; ?>
- </body>
-</html>
-```
-
-## Run the Applicatioin
-  http://www.yourhostname.com/
-
-## Alternative
-you can generate the example above by using Yaf Code Generator:  https://github.com/laruence/php-yaf/tree/master/tools/cg
-
-## More
-More info could be found at Yaf Manual: http://www.php.net/manual/en/book.yaf.php
