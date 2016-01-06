@@ -30,7 +30,10 @@ extern "C"
 #include "php_ons_sender.h"
 }
 
+#ifdef PHP_WIN32
 #include <atomic>
+#endif
+
 #include "ONSFactory.h"
 #include "ONSClientException.h"
 
@@ -81,7 +84,13 @@ PHP_FUNCTION(ons_send)
 	try
 	{
 		SendResultONS sendResult = pProducer->send(msg);
+
+#ifdef PHP_WIN32
 		rt_str = zend_string_init(sendResult.getMessageId(), strlen(sendResult.getMessageId()) + 1, 0);
+#else
+		rt_str = zend_string_init(sendResult.getMessageId().c_str(), sendResult.getMessageId().length() + 1, 0);
+#endif
+
 	}
 	catch (ONSClientException & e)
 	{
@@ -89,6 +98,14 @@ PHP_FUNCTION(ons_send)
 	}
 
 	RETURN_STR(rt_str);
+}
+/* }}} */
+
+/** {{{ PHP_GINIT_FUNCTION
+*/
+PHP_GINIT_FUNCTION(ons_sender)
+{
+	memset(ons_sender_globals, 0, sizeof(*ons_sender_globals));
 }
 /* }}} */
 
