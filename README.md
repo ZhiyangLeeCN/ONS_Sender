@@ -1,6 +1,6 @@
 # Aliyun ONS SKD for PHP7 (only send) 
 
-Allow you send message to Aliyun ONS on PHP7 
+Allow you send message to Aliyun ONS in PHP7 
 >让您可以在PHP7上发送消息到阿里云的ONS(开放消息服务)中
 
 ## Requirement
